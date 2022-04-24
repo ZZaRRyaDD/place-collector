@@ -1,9 +1,10 @@
 """Module with invoke-commands."""
 from invoke import Exit, UnexpectedExit, task
-from rich import print, panel
+from rich import panel, print
 
-DEFAULT_FOLDERS = "place_collector conftest.py tasks.py"
+DEFAULT_FOLDERS = "place_collector tasks.py"
 START_COMMAND = "docker-compose -f local.yml"
+
 
 def success(msg):
     """Print success message."""
@@ -35,15 +36,47 @@ def run(context):
 @task
 def run_container(context, command=""):
     """Template for run container."""
-    return context.run(
-        f"{START_COMMAND} run --rm django {command}"
-    )
+    print(f"{START_COMMAND} run --rm django {command}")
+    return context.run(f"{START_COMMAND} run --rm django {command}")
 
 
 @task
 def manage(context, command=""):
     """Template for python manage.py."""
     run_container(context, f"python manage.py {command}")
+
+
+@task
+def hooks(context):
+    """Install git hooks."""
+    success("Setting up GitHooks")
+    context.run("git config core.hooksPath .git-hooks")
+
+
+@task
+def createsuperuser(context):
+    """Create superuser."""
+    command = (
+        "from place_collector.users.models import User;"
+        'User.objects.create_superuser(username="root", '
+        'email="root@root.com", '
+        'password="root")'
+    )
+    manage(context, f"shell -c '{command}'")
+
+
+@task
+def resetdb(context, apply_migrations=True):
+    """Reset database to initial state (including test DB)."""
+    success("Reset database to its initial state")
+    manage(context, "drop_test_database --noinput")
+    manage(context, "reset_db -c --noinput")
+    if not apply_migrations:
+        return
+    manage(context, "makemigrations")
+    manage(context, "migrate")
+    createsuperuser(context)
+    set_default_site(context)
 
 
 @task
@@ -60,6 +93,13 @@ def isort(context, path=DEFAULT_FOLDERS, params=""):
 
 
 @task
+def black(context, path=DEFAULT_FOLDERS):
+    """Run `flake8` linter."""
+    success("Linters: Black running")
+    run_container(context, f"black {path}")
+
+
+@task
 def flake8(context, path=DEFAULT_FOLDERS):
     """Run `flake8` linter."""
     success("Linters: Flake8 running")
@@ -71,7 +111,7 @@ def flake8(context, path=DEFAULT_FOLDERS):
 def all(context, path=DEFAULT_FOLDERS):
     """Run all linters."""
     success("Linters: running all linters")
-    linters = (isort, flake8)
+    linters = (isort, flake8, black)
     failed = []
     for linter in linters:
         try:
@@ -96,10 +136,12 @@ def install_tools(context):
 
 
 @task
-def install(context, env="development"):
+def install_requirements(context, env="development"):
     """Install local development requirements."""
     success(f"Install requirements with pip from {env}.txt")
-    context.run(f"pip install -r requirements/{env}.txt")
+    context.run(
+        f"cat requirements/{env}.txt | grep -E '^[^# ]' | cut -d= -f1 | xargs -n 1 poetry add"
+    )
 
 
 @task
@@ -126,3 +168,39 @@ def pytest(context):
     """
     success("Tests running")
     run_container(context, "pytest")
+
+
+def set_default_site(context):
+    """Set default site to localhost.
+
+    Set default site domain to `localhost:8000` so `get_absolute_url`
+    works correctly in local environment
+    """
+    manage(
+        context,
+        "set_default_site --name localhost:8000 --domain localhost:8000",
+    )
+
+
+@task
+def pre_push(context):
+    """Perform pre push check."""
+    success("Perform pre-push check")
+    code_style_passed = _run_check(
+        context=context,
+        checker=all,
+        error_msg="Code style checks failed!",
+    )
+    if not code_style_passed:
+        error("Push aborted due to errors\nPLS fix them first!")
+        raise Exit(code=1)
+    success("Wonderful JOB! Thank You!")
+
+
+def _run_check(context, checker, error_msg: str, *args, **kwargs):
+    try:
+        checker(context, *args, **kwargs)
+    except (UnexpectedExit, Exit):
+        warn(error_msg)
+        return False
+    return True

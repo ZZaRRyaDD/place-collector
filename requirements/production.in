@@ -1,0 +1,8 @@
+-r base.txt
+
+gunicorn
+psycopg2-binary
+
+# Django
+# ------------------------------------------------------------------------------
+django-anymail

@@ -33,35 +33,37 @@ def run(context):
 
 
 @task
-def manage(context, command):
-    """Template for python manage.py."""
+def run_container(context, command=""):
+    """Template for run container."""
     return context.run(
-        f"{START_COMMAND} run --rm django python manage.py {command}"
+        f"{START_COMMAND} run --rm django {command}"
     )
 
 
 @task
-def startapp(context, app_name):
+def manage(context, command=""):
+    """Template for python manage.py."""
+    run_container(context, f"python manage.py {command}")
+
+
+@task
+def startapp(context, app_name=""):
     """Create new app."""
-    return context.run(
-        f"{START_COMMAND} run --rm django python manage.py startapp {app_name}"
-    )
+    manage(context, f"startapp {app_name}")
 
 
 @task
 def isort(context, path=DEFAULT_FOLDERS, params=""):
     """Command to fix imports formatting."""
     success("Linters: ISort running")
-    return context.run(
-        f"{START_COMMAND} run --rm django isort {path} {params}"
-    )
+    run_container(context, f"isort {path} {params}")
 
 
 @task
 def flake8(context, path=DEFAULT_FOLDERS):
     """Run `flake8` linter."""
     success("Linters: Flake8 running")
-    return context.run(f"{START_COMMAND} run --rm django flake8 {path}")
+    run_container(context, f"flake8 {path}")
 
 
 # pylint: disable=redefined-builtin
@@ -90,7 +92,6 @@ def install_tools(context):
     Define your dependencies here, for example
     local("sudo npm -g install ngrok")
     """
-
     context.run("pip install --upgrade setuptools pip pip-tools wheel")
 
 
@@ -113,3 +114,15 @@ def compile(context, update=False):
     ]
     for in_file in in_files:
         context.run(f"pip-compile -q {in_file} {upgrade}")
+
+
+@task
+def pytest(context):
+    """Run django tests with ``extra`` args for ``p`` tests.
+
+    `p` means `params` - extra args for tests
+    manage.py test <extra>
+
+    """
+    success("Tests running")
+    run_container(context, "pytest")

@@ -17,15 +17,9 @@ Moved to [settings](http://cookiecutter-django.readthedocs.io/en/latest/settings
 
 -   To create a **superuser account**, use this command:
 
-        $ python manage.py createsuperuser
+        $ inv manage createsuperuser
 
 For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
-
-### Type checks
-
-Running type checks with mypy:
-
-    $ mypy place_collector
 
 ### Test coverage
 
@@ -37,7 +31,7 @@ To run the tests, check your test coverage, and generate an HTML coverage report
 
 #### Running tests with pytest
 
-    $ pytest
+    $ inv pytest
 
 ### Live reloading and Sass CSS compilation
 

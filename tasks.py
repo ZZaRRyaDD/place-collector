@@ -53,15 +53,17 @@ def hooks(context):
 
 
 @task
-def createsuperuser(context):
+def createsuperuser(
+    context,
+    username="root",
+    password="root",
+    email="root@root.com",
+):
     """Create superuser."""
-    command = (
-        "from place_collector.users.models import User;"
-        'User.objects.create_superuser(username="root", '
-        'email="root@root.com", '
-        'password="root")'
+    manage(
+        context,
+        f"createsuperuser2 --username {username} --password {password} --noinput --email {email}",
     )
-    manage(context, f"shell -c '{command}'")
 
 
 @task

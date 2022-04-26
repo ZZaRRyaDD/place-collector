@@ -35,21 +35,14 @@ def run(context):
 
 @task
 def run_container(context, command=""):
-    """Template for run container."""
+    """Base template for commands with django container."""
     return context.run(f"{START_COMMAND} run --rm django {command}")
 
 
 @task
 def manage(context, command=""):
-    """Template for python manage.py."""
+    """ase template for commands with python manage.py."""
     run_container(context, f"python manage.py {command}")
-
-
-@task
-def hooks(context):
-    """Install git hooks."""
-    success("Setting up GitHooks")
-    context.run("git config core.hooksPath .git-hooks")
 
 
 @task
@@ -95,7 +88,7 @@ def isort(context, path=DEFAULT_FOLDERS, params=""):
 
 @task
 def black(context, path=DEFAULT_FOLDERS):
-    """Run `flake8` linter."""
+    """Run `black` linter."""
     success("Linters: Black running")
     run_container(context, f"black {path}")
 
@@ -128,21 +121,18 @@ def all(context, path=DEFAULT_FOLDERS):
 
 @task
 def install_tools(context):
-    """Install cli dependencies, and tools needed to install requirements.
-
-    Define your dependencies here, for example
-    local("sudo npm -g install ngrok")
-    """
+    """Install cli dependencies, and tools needed to install requirements."""
     context.run("pip install --upgrade setuptools pip pip-tools wheel")
 
 
 @task
-def install_requirements(context, env="development"):
+def install_requirements(context, envs=["development", "base"]):
     """Install local development requirements."""
-    success(f"Install requirements with pip from {env}.txt")
-    context.run(
-        f"cat requirements/{env}.txt | grep -E '^[^# ]' | cut -d= -f1 | xargs -n 1 poetry add"
-    )
+    for env in envs:
+        success(f"Install requirements with pip from {env}.txt")
+        context.run(
+            f"cat requirements/{env}.txt | grep -E '^[^# ]' | cut -d= -f1 | xargs -n 1 poetry add"
+        )
 
 
 @task
@@ -161,12 +151,7 @@ def compile(context, update=False):
 
 @task
 def pytest(context):
-    """Run django tests with ``extra`` args for ``p`` tests.
-
-    `p` means `params` - extra args for tests
-    manage.py test <extra>
-
-    """
+    """Run django tests."""
     success("Tests running")
     run_container(context, "pytest")
 
@@ -205,3 +190,46 @@ def _run_check(context, checker, error_msg: str, *args, **kwargs):
         warn(error_msg)
         return False
     return True
+
+
+@task
+def fill_sample_data(context):
+    """Prepare sample data for local usage."""
+    manage(context, "runscript fill_sample_data")
+
+
+@task
+def pre_push_install(context):
+    """Pre-commit install."""
+    context.run("pre-commit install")
+    context.run("pre-commit run --all-files")
+
+
+def gitmessage(context):
+    """Set default .gitmessage."""
+    success("Deploy git commit message template")
+    context.run("git config commit.template .gitmessage")
+
+
+@task
+def init(context, clean=False):
+    """Prepare env for working with project."""
+    success("Setting up git config")
+    hooks(context)
+    gitmessage(context)
+    success("Initial assembly of all dependencies")
+    install_tools(context)
+    install_requirements(context)
+    build(context)
+    manage(context, "migrate")
+    set_default_site(context)
+    pytest(context)
+    createsuperuser(context)
+    try:
+        fill_sample_data(context)
+    except NotImplementedError:
+        warn(
+            "Awesome, almost everything is Done! \n"
+            "You're the first developer - pls generate factories \n"
+            "for test data and setup development environment",
+        )

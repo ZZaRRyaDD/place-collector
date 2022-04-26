@@ -6,7 +6,6 @@ from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.http import HttpRequest, HttpResponseRedirect
 from django.test import RequestFactory
-from django.urls import reverse
 
 from place_collector.users.forms import UserAdminChangeForm
 from place_collector.users.models import User
@@ -95,8 +94,7 @@ class TestUserDetailView:
         request.user = AnonymousUser()
 
         response = user_detail_view(request, username=user.username)
-        login_url = reverse(settings.LOGIN_URL)
 
         assert isinstance(response, HttpResponseRedirect)
         assert response.status_code == 302
-        assert response.url == f"{login_url}?next=/fake-url/"
+        assert response.url == f"{settings.LOGIN_URL}?next=/fake-url/"

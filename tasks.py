@@ -36,7 +36,6 @@ def run(context):
 @task
 def run_container(context, command=""):
     """Template for run container."""
-    print(f"{START_COMMAND} run --rm django {command}")
     return context.run(f"{START_COMMAND} run --rm django {command}")
 
 

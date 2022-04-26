@@ -46,6 +46,13 @@ def manage(context, command=""):
 
 
 @task
+def hooks(context):
+    """Install git hooks."""
+    success("Setting up GitHooks")
+    context.run("git config core.hooksPath .git-hooks")
+
+
+@task
 def createsuperuser(
     context,
     username="root",

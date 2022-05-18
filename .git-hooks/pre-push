@@ -1,2 +1,2 @@
 #!/bin/sh
-inv pre-push
+inv git.pre-push

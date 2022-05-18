@@ -244,7 +244,6 @@ mccabe==0.6.1
     #   pylint
 mypy==0.942
     # via
-    #   -r requirements/development.in
     #   django-stubs
     #   djangorestframework-stubs
 mypy-extensions==0.4.3
@@ -479,7 +478,7 @@ wcwidth==0.2.5
     # via
     #   -r requirements/base.txt
     #   prompt-toolkit
-werkzeug==2.1.1
+werkzeug==2.0.3
     # via -r requirements/development.in
 whitenoise==6.0.0
     # via -r requirements/base.txt

@@ -1,3 +1,4 @@
-# from django.shortcuts import render
+from django.views.generic import ListView, TemplateView
 
-# Create your views here.
+class ListPlacesView(TemplateView):
+    template_name = "collector/list_places.html"

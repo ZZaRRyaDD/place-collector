@@ -4,8 +4,8 @@
 # ------------------------------------------------------------------------------
 invoke
 rich
-Werkzeug
 ipdb
+Werkzeug
 psycopg2-binary
 watchgod
 

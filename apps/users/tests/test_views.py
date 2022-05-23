@@ -10,7 +10,7 @@ from django.test import RequestFactory
 from apps.users.forms import UserAdminChangeForm
 from apps.users.models import User
 from apps.users.tests.factories import UserFactory
-from apps.users.views import UserRedirectView, UserUpdateView, user_detail_view
+from apps.users.views import UserRedirectView, UserUpdateView, UserDetailView
 
 pytestmark = pytest.mark.django_db
 
@@ -81,7 +81,7 @@ class TestUserDetailView:
         request = rf.get("/fake-url/")
         request.user = UserFactory()
 
-        response = user_detail_view(request, username=user.username)
+        response = UserDetailView.as_view()(request, username=user.username)
 
         assert response.status_code == 200
 
@@ -89,7 +89,7 @@ class TestUserDetailView:
         request = rf.get("/fake-url/")
         request.user = AnonymousUser()
 
-        response = user_detail_view(request, username=user.username)
+        response = UserDetailView.as_view()(request, username=user.username)
 
         assert isinstance(response, HttpResponseRedirect)
         assert response.status_code == 302

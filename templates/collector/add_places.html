@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block title %}{% trans "Add places" %}{% endblock %}
+
+{% block javascript %}
+<script
+    src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=e5a4d9ff-cd10-4812-ae25-6b158dba3edb"
+    type="text/javascript"
+></script>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <form class="d-flex flex-column align-items-center" method="post" action="{% url 'collector:add_place' %}">
+            {% csrf_token %}
+            <div id='map' style='width: 700px; height: 400px;'></div>
+            {{ form|crispy }}
+            <button class="btn" type="submit">{% trans "Add place" %}</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block inline_javascript %}
+<script>
+ymaps.ready(init);
+var myMap;
+
+function setCookie(name, value, days) {
+    if (days > 0) {
+      let seconds = new Date().getTime() + 60 * 60 * 24 * days;
+      let date = new Date(seconds).toUTCString();
+      document.cookie =
+        name + `=${encodeURIComponent(value)};expires=${date};path=/`;
+    } else {
+      document.cookie = name + `=${encodeURIComponent(value)};path=/`;
+    }
+}
+
+function init() {
+    myMap = new ymaps.Map("map", {
+        center: [57.5262, 38.3061],
+        zoom: 11
+    }, {
+        balloonMaxWidth: 200,
+        searchControlProvider: 'yandex#search'
+    });
+    myMap.events.add('click', function (e) {
+        if (!myMap.balloon.isOpen()) {
+            var coords = e.get('coords');
+            myMap.balloon.open(coords, {
+                contentBody:'<p>Выбрана точка.</p>' +
+                    '<p>Координаты точки: ' + [
+                    coords[0].toPrecision(6),
+                    coords[1].toPrecision(6)
+                    ].join(', ') + '</p>',
+            });
+            setCookie("latitude", coords[0], 7)
+            setCookie("longitude", coords[1], 7)
+        }
+        else {
+            myMap.balloon.close();
+        }
+    });
+
+    // Hiding the hint when opening the balloon.
+    myMap.events.add('balloonopen', function (e) {
+        myMap.hint.close();
+    });
+}
+</script>
+{% endblock %}

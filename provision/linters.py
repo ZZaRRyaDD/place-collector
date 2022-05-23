@@ -1,7 +1,8 @@
 from invoke import Exit, UnexpectedExit, task
+
 from . import common, docker
 
-DEFAULT_FOLDERS = "place_collector tasks.py"
+DEFAULT_FOLDERS = "."
 
 
 @task
@@ -25,12 +26,11 @@ def flake8(context, path=DEFAULT_FOLDERS):
     docker.run_container(context, f"flake8 {path}")
 
 
-# pylint: disable=redefined-builtin
 @task
 def all(context, path=DEFAULT_FOLDERS):
     """Run all linters."""
     common.success("Linters: running all linters")
-    linters = (isort, flake8, black)
+    linters = (isort, black, flake8)
     failed = []
     for linter in linters:
         try:

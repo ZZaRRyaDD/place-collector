@@ -1,11 +1,12 @@
 from invoke import task
-from . import common, django, git, docker, tests
+
+from . import common, django, docker, git, tests
 
 
 @task
 def install_tools(context):
     """Install cli dependencies, and tools needed to install requirements."""
-    context.run("pip install --upgrade setuptools pip pip-tools wheel")
+    context.run("pip install setuptools pip pip-tools wheel")
 
 
 @task
@@ -17,9 +18,7 @@ def install_requirements(context):
     ]
     for env in envs:
         common.success(f"Install requirements with pip from {env}.txt")
-        context.run(
-            f"cat requirements/{env}.txt | grep -E '^[^# ]' | cut -d= -f1 | xargs -n 1 poetry add"
-        )
+        context.run(f"pip install -r requirements/{env}.txt")
 
 
 @task
@@ -64,3 +63,4 @@ def init(context):
             "You're the first developer - pls generate factories \n"
             "for test data and setup development environment",
         )
+    context.run("poetry lock --no-update")

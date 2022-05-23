@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "List places" %}{% endblock %}
+
+{% block content %}
+<div class="row">
+    {% if places %}
+        {% for place in places %} 
+            <div class="card m-3 col-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ place.name }}</h5>
+                    <p class="card-text">{{ place.description }}</p>
+                    <a href="#" class="btn btn-primary">{% trans "More" %}</a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        {% trans "Places not found." %}
+    {% endif %}
+</div>
+{% endblock %}

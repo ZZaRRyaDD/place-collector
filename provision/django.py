@@ -1,4 +1,5 @@
 from invoke import task
+
 from . import common, docker
 
 
@@ -9,10 +10,10 @@ def manage(context, command=""):
 
 
 @task
-def makemigrations(context):
+def makemigrations(context, app_name=""):
     """Run makemigrations command and chown created migrations."""
     common.success("Django: Make migrations")
-    manage(context, "makemigrations")
+    manage(context, f"makemigrations {app_name}")
 
 
 @task
@@ -23,10 +24,10 @@ def check_new_migrations(context):
 
 
 @task
-def migrate(context):
+def migrate(context, app_name=""):
     """Run ``migrate`` command."""
     common.success("Django: Apply migrations")
-    manage(context, "migrate")
+    manage(context, f"migrate {app_name}")
 
 
 @task

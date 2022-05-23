@@ -1,4 +1,5 @@
 from invoke import task
+
 START_COMMAND = "docker-compose -f local.yml"
 
 
@@ -18,3 +19,9 @@ def run(context):
 def run_container(context, command=""):
     """Base template for commands with django container."""
     return context.run(f"{START_COMMAND} run --rm django {command}")
+
+
+@task
+def delcont(context):
+    """Delete all docker containers."""
+    return context.run("docker rm -f $(docker ps -a -q)")

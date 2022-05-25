@@ -23,7 +23,7 @@ class AddPlaceView(generic.CreateView):
 
     def get_success_url(self) -> str:
         """Get url for reverse after success create."""
-        return reverse_lazy("collector:list_places")
+        return reverse_lazy("collector:list-places")
 
     def post(self, request, *args, **kwargs):
         """Handler for POST request."""
@@ -33,14 +33,16 @@ class AddPlaceView(generic.CreateView):
                 form,
                 request.COOKIES["latitude"],
                 request.COOKIES["longitude"],
+                request.user,
             )
         return self.form_invalid(form)
 
-    def form_valid(self, form, latitude, longitude):
+    def form_valid(self, form, latitude, longitude, user):
         """Overridden for save form after create."""
         object = form.save(commit=False)
         object.latitude = latitude
         object.longitude = longitude
+        object.user = user
         object.save()
         return redirect(self.get_success_url())
 
@@ -49,3 +51,63 @@ class AddPlaceView(generic.CreateView):
         return self.render_to_response(
             self.get_context_data(form=form),
         )
+
+
+class DetailPlaceView(generic.DetailView):
+    """View for detail information about place."""
+
+    queryset = models.Place.objects.all()
+    template_name = "collector/detail_place.html"
+    context_object_name = "place"
+
+
+class DeletePlaceView(generic.DeleteView):
+    """View for delete place."""
+
+    model = models.Place
+
+    def get_success_url(self) -> str:
+        return reverse_lazy("collector:list-places")
+
+
+class UpdatePlaceView(generic.UpdateView):
+    """View for update place."""
+
+    template_name = "collector/update_place.html"
+    form_class = forms.PlaceForm
+    queryset = models.Place.objects.all()
+    context_object_name = "place"
+
+    def get_success_url(self) -> str:
+        return reverse_lazy(
+            "collector:detail-place",
+            kwargs={"pk": self.get_object().pk},
+        )
+
+    def get_object(self):
+        return self.queryset.get(id=self.kwargs["pk"])
+
+    def post(self, request, *args, **kwargs):
+        form = forms.PlaceForm(
+            request.POST,
+            instance=self.get_object(),
+        )
+        if form.is_valid():
+            return self.form_valid(
+                form,
+                request.COOKIES["latitude"],
+                request.COOKIES["longitude"],
+                request.user,
+            )
+        return self.form_invalid(form)
+
+    def form_valid(self, form, latitude, longitude, user):
+        object = form.save(commit=False)
+        object.latitude = latitude
+        object.longitude = longitude
+        object.user = user
+        object.save()
+        return redirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))

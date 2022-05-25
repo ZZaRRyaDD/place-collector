@@ -11,12 +11,15 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ place.name }}</h5>
                     <p class="card-text">{{ place.description }}</p>
-                    <a href="#" class="btn btn-primary">{% trans "More" %}</a>
+                    <a href="{% url 'collector:detail-place' place.pk %}" class="btn btn-primary">{% trans "More" %}</a>
                 </div>
             </div>
         {% endfor %}
     {% else %}
-        {% trans "Places not found." %}
+        <p>{% trans "Places not found." %}</p>
     {% endif %}
+    <div class="d-flex px-3">
+        <a href="{% url 'collector:add-place' %}" class="btn btn-primary">{% trans "Add place" %}</a>
+    </div>
 </div>
 {% endblock %}

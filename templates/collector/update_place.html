@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
-{% load i18n %}
+{% load i18n crispy_forms_tags %}
 
-{% block title %}{% trans "Add places" %}{% endblock %}
+{% block title %}{% trans "Update place" %}{% endblock %}
 
 {% block javascript %}
 <script
@@ -12,40 +11,55 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <form class="d-flex flex-column align-items-center" method="post" action="{% url 'collector:add-place' %}">
-            {% csrf_token %}
-            <div id='map' style='width: 700px; height: 400px;'></div>
-            {{ form|crispy }}
-            <button class="btn btn-primary" type="submit">{% trans "Add place" %}</button>
-        </form>
-    </div>
+    <form class="d-flex flex-column align-items-center" method="post" action="{% url 'collector:update-place' place.pk %}">
+        {% csrf_token %}
+        <div id='map' style='width: 700px; height: 400px;'></div>
+        {{ form|crispy }}
+        <button class="btn btn-primary" type="submit">{% trans "Update place" %}</button>
+        <div id="latitude" class="d-none">{{ place.latitude }}</div>
+        <div id="longitude" class="d-none">{{ place.longitude }}</div>
+    </form>
 {% endblock %}
 
 {% block inline_javascript %}
 <script>
-ymaps.ready(init);
-var myMap;
-
 function setCookie(name, value, days) {
     if (days > 0) {
-      let seconds = new Date().getTime() + 60 * 60 * 24 * days;
-      let date = new Date(seconds).toUTCString();
-      document.cookie =
+        let seconds = new Date().getTime() + 60 * 60 * 24 * days;
+        let date = new Date(seconds).toUTCString();
+        document.cookie =
         name + `=${encodeURIComponent(value)};expires=${date};path=/`;
     } else {
-      document.cookie = name + `=${encodeURIComponent(value)};path=/`;
+        document.cookie = name + `=${encodeURIComponent(value)};path=/`;
     }
 }
+ymaps.ready(init);
+var myMap;
+let latitude = document.getElementById("latitude").innerText
+let longitude = document.getElementById("longitude").innerText
+const points = [
+    Number(latitude.replace(",", ".")),
+    Number(longitude.replace(",", ".")),
+]
+setCookie("latitude", points[0], 7)
+setCookie("longitude", points[1], 7)
 
 function init() {
     myMap = new ymaps.Map("map", {
-        center: [57.5262, 38.3061],
+        center: points,
         zoom: 0,
     }, {
         balloonMaxWidth: 200,
         searchControlProvider: 'yandex#search'
     });
+    myMap.geoObjects
+    .add(new ymaps.Placemark(points, {
+        balloonContent: "{{ place.name }}<br>{{ place.description }}"
+    }, {
+        preset: 'islands#circleIcon',
+        iconColor: '#3caa3c'
+    }));
+
     myMap.events.add('click', function (e) {
         if (!myMap.balloon.isOpen()) {
             var coords = e.get('coords');

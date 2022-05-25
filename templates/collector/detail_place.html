@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Place - {{ place.name }}{% endblock %}
+
+{% block javascript %}
+<script
+    src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=e5a4d9ff-cd10-4812-ae25-6b158dba3edb"
+    type="text/javascript"
+></script>
+{% endblock %}
+
+{% block content %}
+    <div>
+        <h5>{{ place.name }}</h5>
+        <div id='map' style='width: 700px; height: 400px;'></div>
+        <p class="py-3">{{ place.description }}</p>
+        <div class="d-flex ">
+            <form method="post" action="{% url 'collector:del-place' place.pk %}">
+                {% csrf_token %}
+                <button class="btn btn-danger" type="submit">{% trans "Delete place" %}</button>
+            </form>
+            <a href="{% url 'collector:update-place' place.pk %}" class="btn btn-success mx-3">
+                {% trans "Update place" %}
+            </a>
+        </div>
+        <div id="latitude" class="d-none">{{ place.latitude }}</div>
+        <div id="longitude" class="d-none">{{ place.longitude }}</div>
+    </div>
+{% endblock %}
+
+{% block inline_javascript %}
+<script>
+ymaps.ready(init);
+let latitude = document.getElementById("latitude").innerText
+let longitude = document.getElementById("longitude").innerText
+const points = [
+    Number(latitude.replace(",", ".")),
+    Number(longitude.replace(",", ".")),
+]
+
+function init() {
+    var myMap = new ymaps.Map("map", {
+            center: points,
+            zoom: 0
+        }, {
+            searchControlProvider: 'yandex#search'
+        });
+
+    myMap.geoObjects
+        .add(new ymaps.Placemark(points, {
+            balloonContent: "{{ place.name }}<br>{{ place.description }}"
+        }, {
+            preset: 'islands#circleIcon',
+            iconColor: '#3caa3c'
+        }));
+}
+</script>
+{% endblock %}

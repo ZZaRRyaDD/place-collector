@@ -10,7 +10,7 @@ from django.test import RequestFactory
 from apps.users.forms import UserAdminChangeForm
 from apps.users.models import User
 from apps.users.tests.factories import UserFactory
-from apps.users.views import UserRedirectView, UserUpdateView, UserDetailView
+from apps.users.views import UserDetailView, UserRedirectView, UserUpdateView
 
 pytestmark = pytest.mark.django_db
 

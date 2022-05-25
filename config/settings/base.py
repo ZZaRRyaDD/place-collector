@@ -69,6 +69,7 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "allauth.socialaccount.providers.vk",
     "django_celery_beat",
     "rest_framework",
     "rest_framework.authtoken",
@@ -94,7 +95,7 @@ AUTHENTICATION_BACKENDS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
-LOGIN_REDIRECT_URL = "users:redirect"
+LOGIN_REDIRECT_URL = "collector:list-places"
 
 # PASSWORDS
 # ------------------------------------------------------------------------------
@@ -219,7 +220,6 @@ EMAIL_TIMEOUT = 5
 # ------------------------------------------------------------------------------
 # Django Admin URL.
 ADMIN_URL = "admin/"
-LOGIN_URL = "accounts/login/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = [("""ZZaRRyaDD'""", "zzarryadd'@example.com")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers

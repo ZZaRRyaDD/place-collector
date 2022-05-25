@@ -67,6 +67,7 @@ class DeletePlaceView(generic.DeleteView):
     model = models.Place
 
     def get_success_url(self) -> str:
+        """Get url for reverse after delete place."""
         return reverse_lazy("collector:list-places")
 
 
@@ -79,15 +80,18 @@ class UpdatePlaceView(generic.UpdateView):
     context_object_name = "place"
 
     def get_success_url(self) -> str:
+        """Get url for reverse after delete place."""
         return reverse_lazy(
             "collector:detail-place",
             kwargs={"pk": self.get_object().pk},
         )
 
     def get_object(self):
+        """Get object those will be update."""
         return self.queryset.get(id=self.kwargs["pk"])
 
     def post(self, request, *args, **kwargs):
+        """Handler for POST request."""
         form = forms.PlaceForm(
             request.POST,
             instance=self.get_object(),
@@ -102,6 +106,7 @@ class UpdatePlaceView(generic.UpdateView):
         return self.form_invalid(form)
 
     def form_valid(self, form, latitude, longitude, user):
+        """Overridden for save form after update."""
         object = form.save(commit=False)
         object.latitude = latitude
         object.longitude = longitude
@@ -110,4 +115,5 @@ class UpdatePlaceView(generic.UpdateView):
         return redirect(self.get_success_url())
 
     def form_invalid(self, form):
+        """Overriden for reload page"""
         return self.render_to_response(self.get_context_data(form=form))

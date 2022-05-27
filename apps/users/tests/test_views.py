@@ -7,10 +7,10 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.http import HttpRequest, HttpResponseRedirect
 from django.test import RequestFactory
 
+from apps.users.factories import UserFactory
 from apps.users.forms import UserAdminChangeForm
 from apps.users.models import User
-from apps.users.tests.factories import UserFactory
-from apps.users.views import UserDetailView, UserRedirectView, UserUpdateView
+from apps.users.views import UserDetailView, UserUpdateView
 
 pytestmark = pytest.mark.django_db
 
@@ -63,17 +63,6 @@ class TestUserUpdateView:
 
         messages_sent = [m.message for m in messages.get_messages(request)]
         assert messages_sent == ["Information successfully updated"]
-
-
-class TestUserRedirectView:
-    def test_get_redirect_url(self, user: User, rf: RequestFactory):
-        view = UserRedirectView()
-        request = rf.get("/fake-url")
-        request.user = user
-
-        view.request = request
-
-        assert view.get_redirect_url() == f"/users/{user.username}/"
 
 
 class TestUserDetailView:

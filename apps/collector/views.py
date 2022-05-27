@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
@@ -5,7 +6,7 @@ from django.views import generic
 from . import forms, models
 
 
-class ListPlacesView(generic.ListView):
+class ListPlacesView(LoginRequiredMixin, generic.ListView):
     """View for list of places."""
 
     template_name = "collector/list_places.html"
@@ -13,7 +14,7 @@ class ListPlacesView(generic.ListView):
     context_object_name = "places"
 
 
-class AddPlaceView(generic.CreateView):
+class AddPlaceView(LoginRequiredMixin, generic.CreateView):
     """View for Place create."""
 
     template_name = "collector/add_places.html"
@@ -27,6 +28,7 @@ class AddPlaceView(generic.CreateView):
 
     def post(self, request, *args, **kwargs):
         """Handler for POST request."""
+        self.object = None
         form = self.get_form()
         if form.is_valid():
             return self.form_valid(
@@ -39,29 +41,30 @@ class AddPlaceView(generic.CreateView):
 
     def form_valid(self, form, latitude, longitude, user):
         """Overridden for save form after create."""
-        object = form.save(commit=False)
-        object.latitude = latitude
-        object.longitude = longitude
-        object.user = user
-        object.save()
+        self.object = form.save(commit=False)
+        self.object.latitude = latitude
+        self.object.longitude = longitude
+        self.object.user = user
+        self.object.save()
         return redirect(self.get_success_url())
 
-    def form_invalid(self, form):
-        """Overridden for reload context for retry create."""
-        return self.render_to_response(
-            self.get_context_data(form=form),
-        )
 
-
-class DetailPlaceView(generic.DetailView):
+class DetailPlaceView(PermissionRequiredMixin, generic.DetailView):
     """View for detail information about place."""
 
     queryset = models.Place.objects.all()
     template_name = "collector/detail_place.html"
     context_object_name = "place"
 
+    def has_permission(self) -> bool:
+        return all(
+            [
+                self.request.user.id == self.get_object().user.id,
+            ]
+        )
 
-class DeletePlaceView(generic.DeleteView):
+
+class DeletePlaceView(PermissionRequiredMixin, generic.DeleteView):
     """View for delete place."""
 
     model = models.Place
@@ -70,8 +73,15 @@ class DeletePlaceView(generic.DeleteView):
         """Get url for reverse after delete place."""
         return reverse_lazy("collector:list-places")
 
+    def has_permission(self) -> bool:
+        return all(
+            [
+                self.request.user.id == self.get_object().user.id,
+            ]
+        )
 
-class UpdatePlaceView(generic.UpdateView):
+
+class UpdatePlaceView(PermissionRequiredMixin, generic.UpdateView):
     """View for update place."""
 
     template_name = "collector/update_place.html"
@@ -117,3 +127,10 @@ class UpdatePlaceView(generic.UpdateView):
     def form_invalid(self, form):
         """Overriden for reload page"""
         return self.render_to_response(self.get_context_data(form=form))
+
+    def has_permission(self) -> bool:
+        return all(
+            [
+                self.request.user.id == self.get_object().user.id,
+            ]
+        )

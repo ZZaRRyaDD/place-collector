@@ -1,6 +1,6 @@
 from invoke import Exit, UnexpectedExit, task
 
-from . import common
+from . import common, linters
 
 
 @task
@@ -15,6 +15,7 @@ def pre_push_install(context):
     """Pre-commit install."""
     context.run("pre-commit install")
     context.run("pre-commit run --all-files")
+    context.run("git config --unset-all core.hooksPath")
 
 
 def gitmessage(context):
@@ -29,7 +30,7 @@ def pre_push(context):
     common.success("Perform pre-push check")
     code_style_passed = _run_check(
         context=context,
-        checker=all,
+        checker=linters.all,
         error_msg="Code style checks failed!",
     )
     if not code_style_passed:

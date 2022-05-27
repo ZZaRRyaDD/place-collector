@@ -10,13 +10,11 @@ repos:
     rev: 22.3.0
     hooks:
       - id: black
-        stages: [push]
 
   - repo: https://github.com/PyCQA/isort
     rev: 5.10.1
     hooks:
       - id: isort
-        stages: [push]
 
   - repo: https://github.com/PyCQA/flake8
     rev: 4.0.1
@@ -24,4 +22,3 @@ repos:
       - id: flake8
         args: ["--config=setup.cfg"]
         additional_dependencies: [flake8-isort]
-        stages: [push]

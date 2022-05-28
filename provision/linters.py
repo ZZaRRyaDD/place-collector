@@ -29,7 +29,7 @@ def flake8(context, path=DEFAULT_FOLDERS):
 @task
 def all(context, path=DEFAULT_FOLDERS):
     """Run all linters."""
-    common.success("Linters: running all linters")
+    common.success("Linters: Running all linters")
     linters = (isort, black, flake8)
     failed = []
     for linter in linters:

@@ -1,6 +1,6 @@
 from invoke import Exit, UnexpectedExit, task
 
-from . import common, linters
+from . import common, linters, tests
 
 
 @task
@@ -8,14 +8,6 @@ def hooks(context):
     """Install git hooks."""
     common.success("Setting up GitHooks")
     context.run("git config core.hooksPath .git-hooks")
-
-
-@task
-def pre_push_install(context):
-    """Pre-commit install."""
-    context.run("pre-commit install")
-    context.run("pre-commit run --all-files")
-    context.run("git config --unset-all core.hooksPath")
 
 
 def gitmessage(context):
@@ -33,7 +25,17 @@ def pre_push(context):
         checker=linters.all,
         error_msg="Code style checks failed!",
     )
-    if not code_style_passed:
+    tests_passed = _run_check(
+        context=context,
+        checker=tests.pytest,
+        error_msg="Tests failed!",
+    )
+    if not all(
+        [
+            code_style_passed,
+            tests_passed,
+        ]
+    ):
         common.error("Push aborted due to errors\nPLS fix them first!")
         raise Exit(code=1)
     common.success("Wonderful JOB! Thank You!")

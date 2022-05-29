@@ -22,19 +22,19 @@
 
 {% block inline_javascript %}
 <script>
-ymaps.ready(init);
-var myMap;
-
 function setCookie(name, value, days) {
     if (days > 0) {
       let seconds = new Date().getTime() + 60 * 60 * 24 * days;
       let date = new Date(seconds).toUTCString();
-      document.cookie =
-        name + `=${encodeURIComponent(value)};expires=${date};path=/`;
+      document.cookie = `${name}=${encodeURIComponent(value)};expires=${date};path=/`;
     } else {
-      document.cookie = name + `=${encodeURIComponent(value)};path=/`;
+      document.cookie = `${name}=;path=/;expires=Thu, 01 Jan 1970 00:00:00 UTC`;
     }
 }
+setCookie("latitude", "", -1)
+setCookie("longitude", "", -1)
+ymaps.ready(init);
+var myMap;
 
 function init() {
     myMap = new ymaps.Map("map", {
@@ -54,8 +54,8 @@ function init() {
                     coords[1].toPrecision(6)
                     ].join(', ') + '</p>',
             });
-            setCookie("latitude", coords[0], 7)
-            setCookie("longitude", coords[1], 7)
+            setCookie("latitude", coords[0], 1)
+            setCookie("longitude", coords[1], 1)
         }
         else {
             myMap.balloon.close();

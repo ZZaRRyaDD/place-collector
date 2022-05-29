@@ -26,6 +26,15 @@ class AddPlaceView(LoginRequiredMixin, generic.CreateView):
     model = models.Place
     form_class = forms.PlaceForm
 
+    def check_cookies(self, request):
+        """Check cookie and their values."""
+        return all(
+            [
+                "latitude" in request.COOKIES,
+                "longitude" in request.COOKIES,
+            ]
+        )
+
     def get_success_url(self) -> str:
         """Get url for reverse after success create."""
         return reverse_lazy("collector:list-places")
@@ -34,26 +43,19 @@ class AddPlaceView(LoginRequiredMixin, generic.CreateView):
         """Handler for POST request."""
         self.object = None
         form = self.get_form()
-        print(request.COOKIES)
-        if all([
-            form.is_valid(),
-            "latitude" in request.COOKIES,
-            "longitude" in request.COOKIES
-        ]):
+        if all([form.is_valid(), self.check_cookies(request)]):
             return self.form_valid(
                 form,
-                request.COOKIES["latitude"],
-                request.COOKIES["longitude"],
-                request.user,
+                request,
             )
         return self.form_invalid(form)
 
-    def form_valid(self, form, latitude, longitude, user):
+    def form_valid(self, form, request):
         """Overridden for save form after create."""
         self.object = form.save(commit=False)
-        self.object.latitude = latitude
-        self.object.longitude = longitude
-        self.object.user = user
+        self.object.latitude = request.COOKIES["latitude"]
+        self.object.longitude = request.COOKIES["longitude"]
+        self.object.user = request.user
         self.object.save()
         return redirect(self.get_success_url())
 
@@ -118,24 +120,18 @@ class UpdatePlaceView(PermissionRequiredMixin, generic.UpdateView):
         if form.is_valid():
             return self.form_valid(
                 form,
-                request.COOKIES["latitude"],
-                request.COOKIES["longitude"],
-                request.user,
+                request,
             )
         return self.form_invalid(form)
 
-    def form_valid(self, form, latitude, longitude, user):
+    def form_valid(self, form, request):
         """Overridden for save form after update."""
         object = form.save(commit=False)
-        object.latitude = latitude
-        object.longitude = longitude
-        object.user = user
+        object.latitude = request.COOKIES["latitude"]
+        object.longitude = request.COOKIES["longitude"]
+        object.user = request.user
         object.save()
         return redirect(self.get_success_url())
-
-    def form_invalid(self, form):
-        """Overriden for reload page"""
-        return self.render_to_response(self.get_context_data(form=form))
 
     def has_permission(self) -> bool:
         return all(

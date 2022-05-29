@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-    <form class="d-flex flex-column align-items-center" method="post" action="{% url 'collector:update-place' place.pk %}">
+    <form class="d-flex flex-column" method="post" action="{% url 'collector:update-place' place.pk %}">
         {% csrf_token %}
         <div id='map' style='width: 700px; height: 400px;'></div>
         {{ form|crispy }}
@@ -27,10 +27,9 @@ function setCookie(name, value, days) {
     if (days > 0) {
         let seconds = new Date().getTime() + 60 * 60 * 24 * days;
         let date = new Date(seconds).toUTCString();
-        document.cookie =
-        name + `=${encodeURIComponent(value)};expires=${date};path=/`;
+        document.cookie = `${name}=${encodeURIComponent(value)};expires=${date};path=/`;
     } else {
-        document.cookie = name + `=${encodeURIComponent(value)};path=/`;
+        document.cookie = `${name}=;path=/;expires=Thu, 01 Jan 1970 00:00:00 UTC`;
     }
 }
 ymaps.ready(init);
@@ -41,8 +40,8 @@ const points = [
     Number(latitude.replace(",", ".")),
     Number(longitude.replace(",", ".")),
 ]
-setCookie("latitude", points[0], 7)
-setCookie("longitude", points[1], 7)
+setCookie("latitude", points[0], 1)
+setCookie("longitude", points[1], 1)
 
 function init() {
     myMap = new ymaps.Map("map", {

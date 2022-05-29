@@ -4,7 +4,6 @@
 .gitignore
 .gitlab-ci.yml
 .idea
-.pre-commit-config.yaml
 .readthedocs.yml
 .travis.yml
 venv

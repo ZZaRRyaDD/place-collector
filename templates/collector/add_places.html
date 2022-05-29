@@ -61,10 +61,9 @@ function init() {
             myMap.balloon.close();
         }
     });
-
-    // Hiding the hint when opening the balloon.
-    myMap.events.add('balloonopen', function (e) {
-        myMap.hint.close();
+    myMap.events.add('balloonclose', function (e) {
+        setCookie("latitude", "", -1)
+        setCookie("longitude", "", -1)
     });
 }
 </script>

@@ -11,7 +11,7 @@ def build(context):
 
 @task
 def run(context):
-    """Run postgres, redis, django."""
+    """Run postgres, django."""
     return context.run(f"{START_COMMAND} up")
 
 

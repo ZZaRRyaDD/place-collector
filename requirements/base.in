@@ -3,11 +3,6 @@ python-slugify
 Pillow
 argon2-cffi
 whitenoise
-redis
-hiredis
-celery
-django-celery-beat
-flower
 
 # Django
 # ------------------------------------------------------------------------------
@@ -17,7 +12,6 @@ django-model-utils
 django-allauth
 django-crispy-forms
 crispy-bootstrap5
-django-redis
 # Django REST Framework
 djangorestframework
 django-cors-headers

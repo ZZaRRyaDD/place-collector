@@ -12,14 +12,12 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <form class="d-flex flex-column align-items-center" method="post" action="{% url 'collector:add-place' %}">
-            {% csrf_token %}
-            <div id='map' style='width: 700px; height: 400px;'></div>
-            {{ form|crispy }}
-            <button class="btn btn-primary" type="submit">{% trans "Add place" %}</button>
-        </form>
-    </div>
+    <form class="d-flex flex-column" method="post" action="{% url 'collector:add-place' %}">
+        {% csrf_token %}
+        <div id='map' style='width: 700px; height: 400px;'></div>
+        {{ form|crispy }}
+        <button class="btn btn-primary" type="submit">{% trans "Add place" %}</button>
+    </form>
 {% endblock %}
 
 {% block inline_javascript %}

@@ -34,7 +34,12 @@ class AddPlaceView(LoginRequiredMixin, generic.CreateView):
         """Handler for POST request."""
         self.object = None
         form = self.get_form()
-        if form.is_valid():
+        print(request.COOKIES)
+        if all([
+            form.is_valid(),
+            "latitude" in request.COOKIES,
+            "longitude" in request.COOKIES
+        ]):
             return self.form_valid(
                 form,
                 request.COOKIES["latitude"],

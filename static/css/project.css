@@ -12,3 +12,6 @@
   border-color: #eed3d7;
 }
 
+.asteriskField {
+  display: none;
+}

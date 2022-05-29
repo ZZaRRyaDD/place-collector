@@ -20,6 +20,7 @@ class Place(models.Model):
         User,
         on_delete=models.CASCADE,
         verbose_name=_("Owner of post about place"),
+        related_name="places",
     )
 
     def __str__(self) -> str:

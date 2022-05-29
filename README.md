@@ -31,3 +31,6 @@ inv project.init
 ```
 
 Also you can see detailed [cookiecutter-django Docker documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html).
+
+
+[Hosted project](https://place-collector.herokuapp.com/)

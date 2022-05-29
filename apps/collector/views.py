@@ -3,6 +3,8 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
 
+from apps.users.models import User
+
 from . import forms, models
 
 
@@ -10,8 +12,10 @@ class ListPlacesView(LoginRequiredMixin, generic.ListView):
     """View for list of places."""
 
     template_name = "collector/list_places.html"
-    queryset = models.Place.objects.all()
     context_object_name = "places"
+
+    def get_queryset(self):
+        return User.objects.get(id=self.request.user.id).places.all()
 
 
 class AddPlaceView(LoginRequiredMixin, generic.CreateView):

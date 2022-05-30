@@ -14,7 +14,7 @@
 {% block content %}
     <form class="d-flex flex-column" method="post" action="{% url 'collector:add-place' %}">
         {% csrf_token %}
-        <div id='map' style='width: 700px; height: 400px;'></div>
+        <div id='map' style="width: 100%; height: 600px;"></div>
         {{ form|crispy }}
         <button class="btn btn-primary" type="submit">{% trans "Add place" %}</button>
     </form>

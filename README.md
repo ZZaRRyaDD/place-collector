@@ -1,36 +1,38 @@
-# Place Collector
-
-Behold My Awesome Project!
+## place_collector
 
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
 [![Black code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
-## Settings
+## Описание
 
-Moved to [settings](http://cookiecutter-django.readthedocs.io/en/latest/settings.html).
+Проект был разработан для выбора и сохранения мест на карте. Доступна авторизация через VK / регистрация на сайте
 
-## Deployment
+## Зависимости:
 
-The following details how to deploy this application.
+    - Python - основной язык программирования
+    - Django - фреймворк для написания backend части
+    - Bootstrap - фреймворк для написания frontend части
 
-### Public
-#### Heroku
+## Окружение
 
-See detailed [cookiecutter-django Heroku documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-on-heroku.html).
-### Local
-Create virtual env, install two libs: 
+1. Развёртывание производится на операционной системе Manjaro
+1. Требуется предустановленный интерпретатор Python версии 3.10.5, docker, docker-compose
+
+## Использование
+
+Для запуска нужно установить библиотеки invoke и rich для удобного
+взаимодействия
 
 ```bash
-pip install rich invoke
+pip install invoke rich
 ```
 
-After that next command will do everything for you:
+После установки библиотек:
 
 ```bash
-inv project.init
+inv docker.run
 ```
 
-Also you can see detailed [cookiecutter-django Docker documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html).
-
+Для корректного входа по VK следует добавить социальное приложение и ввести свои данные, которые вы получите на vk.com/dev при создании приложения
 
 [Hosted project](https://place-collector.herokuapp.com/)

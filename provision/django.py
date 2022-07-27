@@ -10,10 +10,10 @@ def manage(context, command=""):
 
 
 @task
-def makemigrations(context, app_name=""):
+def makemigrations(context, comamnd=""):
     """Run makemigrations command and chown created migrations."""
     common.success("Django: Make migrations")
-    manage(context, f"makemigrations {app_name}")
+    manage(context, f"makemigrations {comamnd}")
 
 
 @task
@@ -40,7 +40,10 @@ def createsuperuser(
     """Create superuser."""
     manage(
         context,
-        f"createsuperuser2 --username {username} --password {password} --noinput --email {email}",
+        (
+            f"createsuperuser2 --username {username} "
+            f"--password {password} --noinput --email {email}"
+        ),
     )
 
 

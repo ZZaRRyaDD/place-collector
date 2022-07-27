@@ -69,10 +69,6 @@ THIRD_PARTY_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.vk",
-    "rest_framework",
-    "rest_framework.authtoken",
-    "corsheaders",
-    "drf_spectacular",
 ]
 
 LOCAL_APPS = [
@@ -262,36 +258,3 @@ ACCOUNT_FORMS = {"signup": "apps.users.forms.UserSignupForm"}
 SOCIALACCOUNT_ADAPTER = "apps.users.adapters.SocialAccountAdapter"
 # https://django-allauth.readthedocs.io/en/latest/forms.html
 SOCIALACCOUNT_FORMS = {"signup": "apps.users.forms.UserSocialSignupForm"}
-
-# django-rest-framework
-# -------------------------------------------------------------------------------
-# django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
-    ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-}
-
-# django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
-CORS_URLS_REGEX = r"^/api/.*$"
-
-# By Default swagger ui is available only to admin user(s). You can change permission classes to change that
-# See more configuration options at https://drf-spectacular.readthedocs.io/en/latest/settings.html#settings
-SPECTACULAR_SETTINGS = {
-    "TITLE": "Place Collector API",
-    "DESCRIPTION": "Documentation of API endpoints of Place Collector",
-    "VERSION": "1.0.0",
-    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
-    "SERVERS": [
-        {"url": "http://127.0.0.1:8000", "description": "Local Development server"},
-        {
-            "url": "https://place-collector.herokuapp.com/",
-            "description": "Production server",
-        },
-    ],
-}
-# Your stuff...
-# ------------------------------------------------------------------------------
